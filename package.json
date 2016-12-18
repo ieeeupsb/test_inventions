@@ -1,0 +1,28 @@
+{
+  "name": "rfid_checkin",
+  "version": "1.0.0",
+  "description": "Identify people on a meeting by UP Card",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuieee/inventions_RFId_CheckIn.git"
+  },
+  "keywords": [
+    "rfid",
+    "up",
+    "card",
+    "meeting",
+    "nuieee",
+    "ieee",
+    "invention"
+  ],
+  "author": "Gonçalo Pereira and Luís Sousa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nuieee/inventions_RFId_CheckIn/issues"
+  },
+  "homepage": "https://github.com/nuieee/inventions_RFId_CheckIn#readme"
+}
