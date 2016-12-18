@@ -25,8 +25,8 @@ void setup()
 
   SPI.begin(); // Init SPI bus
 
-    mfrc522.PCD_Init(ssPins[0], RST_PIN); // Init each MFRC522 card
-    mfrc522.PCD_DumpVersionToSerial();
+  mfrc522.PCD_Init(ssPins[0], RST_PIN); // Init each MFRC522 card
+  mfrc522.PCD_DumpVersionToSerial();
 }
 
 void loop()
