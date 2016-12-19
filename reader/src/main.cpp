@@ -111,7 +111,7 @@ void loop(){
     }
 
     HTTPClient http;
-    http.begin("http://haxor.fe.up.pt:3000/entry");
+    http.begin("http://haxor.fe.up.pt:3000/checkin");
     http.addHeader("Content-Type", "text/plain");
 
     int httpCode = http.POST(generateHash(uid, hmacKey, HMAC_KEY_LENGTH)); //HTTP POST and http response code to such POST

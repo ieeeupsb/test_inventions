@@ -18,7 +18,7 @@ router.get("/", function (req, res) {
     });
 });
 
-router.post("/entry", function (req, res) {
+router.post("/checkin", function (req, res) {
     var uid = req.body;
     Dictionary.findOne({uid: uid}, function (error, entry) {
         if (error) {
