@@ -8,7 +8,10 @@ router.get("/", function (req, res) {
         if (error) {
             console.log(error);
         } else {
-            Dictionary.find({uid: attendees.uid}, function (error, people) {
+            Dictionary.find({uid: attendees.map(attendee => attendee.uid)}, function (error, people) {
+                if (error){
+                    console.log(error);
+                }
                 res.render("index", {attendees: people.name});
             });
         }
@@ -21,7 +24,7 @@ router.post("/entry", function (req, res) {
         if (error) {
             console.log(error);
         } else {
-            if (!entry) {
+            if (!entry.uid) {
                 console.log("New user!");
                 console.log(Date.now);
                 console.log(uid);
