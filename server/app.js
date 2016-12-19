@@ -1,29 +1,37 @@
-var express = require("express");
-var mysql = require("mysql");
-var app = express();
+var express = require("express"),
+    app = express(),
+    bodyParser = require("body-parser"),
+    mongoose = require("mongoose"),
+    passport = require("passport"),
+    LocalStrategy = require("passport-local"),
+    User = require("./models/user");
 
-var connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'cards',
-    password : 'secret',
-    database : 'my_db'
+var indexRoutes = require("./routes/index");
+
+mongoose.connect("mongodb://localhost/rfid");
+app.use(bodyParser.urlencoded({extended: true}));
+app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
+
+// PASSPORT
+app.use(require("express-session")({
+    secret: "nuieeeisfun",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(function (req, res, next) {
+    res.locals.currentUser = req.user;
+    next();
 });
 
-app.post("/entry", function (req, res) {
-    var uidEncripted = req.body;
-    var uid = uidEncripted;
-    connection.connect();
-
-    /* 
-    Assuming table with the entries is named log
-    and as two collums (timestamp as DATETIME and uid as ...)
-    */
-    connection.query('INSERT INTO log(timestamp, uid) VALUES(CURRENT_TIMESTAMP, ' + uid + ')', function (err, rows, fields) {
-        if (err) throw err;
-    });
-
-    connection.end();
-});
+app.use(indexRoutes);
 
 app.listen(3000, function () {
     console.log("Server running on port 3000!");
