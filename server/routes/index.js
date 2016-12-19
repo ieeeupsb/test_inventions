@@ -1,18 +1,41 @@
 var express = require("express"),
     router = express.Router(),
-    passport = require("passport"),
-    User = require("../models/user");
+    Attendee = require("../models/atendee"),
+    Dictionary = require("../models/dictionary");
 
 router.get("/", function (req, res) {
-    res.render("index");
-});
-
-router.get("*", function (req, res) {
-    res.send("<h1>404 Not a valid path</h1>");
+    Attendee.find({}, function (error, attendees) {
+        if (error) {
+            console.log(error);
+        } else {
+            Dictionary.find({uid: attendees.uid}, function (error, people) {
+                res.render("index", {attendees: people.name});
+            });
+        }
+    });
 });
 
 router.post("/entry", function (req, res) {
     var uid = req.body;
+    Dictionary.findOne({uid: uid}, function (error, entry) {
+        if (error) {
+            console.log(error);
+        } else {
+            if (!entry) {
+                console.log("New user!");
+                console.log(Date.now);
+                console.log(uid);
+            }
+            Attendee.create({uid: uid}, function (error, attendee) {
+                if (error)
+                    console.log(error);
+            });
+        }
+    });
+});
+
+router.get("*", function (req, res) {
+    res.redirect("/");
 });
 
 module.exports = router;

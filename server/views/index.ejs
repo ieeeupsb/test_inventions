@@ -1,3 +1,15 @@
-<% include ./partials/header %>
-
-<% include ./partials/footer %>
+<% include ./partials/header.ejs %>
+<div class="container">
+    <% if(!attendees){ %>
+    <h1>No one checked in yet...</h1>
+    <% } else { %>
+    <ul>
+        <% attendees.forEach(function (attendee) { %>
+        <li>
+            <%= attendee %>
+        </li>
+        <% }) %>
+    </ul>
+    <% } %>
+</div>
+<% include ./partials/footer.ejs %>
