@@ -12,6 +12,6 @@ router.get("*", function (req, res) {
 });
 
 router.post("/entry", function (req, res) {
-    var uidEncripted = req.body;
-    var uid = uidEncripted;
+    var uid = req.body;
 });
+
