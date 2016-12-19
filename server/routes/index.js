@@ -15,3 +15,4 @@ router.post("/entry", function (req, res) {
     var uid = req.body;
 });
 
+module.exports = router;
