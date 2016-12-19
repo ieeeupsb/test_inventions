@@ -8,11 +8,15 @@ router.get("/", function (req, res) {
         if (error) {
             console.log(error);
         } else {
-            Dictionary.find({uid: attendees.map(attendee => attendee.uid)}, function (error, people) {
-                if (error){
+            Dictionary.find({
+                uid: attendees.map(function (attendee) {
+                    return attendee.uid;
+                })
+            }, function (error, people) {
+                if (error) {
                     console.log(error);
                 }
-                res.render("index", {attendees: people.name});
+                res.render("index", {attendees: people});
             });
         }
     });
@@ -20,20 +24,9 @@ router.get("/", function (req, res) {
 
 router.post("/checkin", function (req, res) {
     var uid = req.body;
-    Dictionary.findOne({uid: uid}, function (error, entry) {
-        if (error) {
+    Attendee.create({uid: uid}, function (error, attendee) {
+        if (error)
             console.log(error);
-        } else {
-            if (!entry.uid) {
-                console.log("New user!");
-                console.log(Date.now);
-                console.log(uid);
-            }
-            Attendee.create({uid: uid}, function (error, attendee) {
-                if (error)
-                    console.log(error);
-            });
-        }
     });
 });
 
