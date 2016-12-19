@@ -22,12 +22,12 @@ uint8_t hmacKey[]={
   0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b
 };
 
-#define HMAC_KEY_LENGHT 20
+#define HMAC_KEY_LENGTH 20
 
-String generateHash(String data, const uint8_t* key, int key_length){
+char* generateHash(String data, const uint8_t* key, int key_length){
   Sha256.initHmac(key, key_length); // key, and length of key in bytes
   Sha256.print(data);
-  return Sha256.resultHmac();
+  return (char*)Sha256.resultHmac();
 }
 
 void red(bool state, int pin = RED_LED_PIN){
@@ -40,8 +40,7 @@ void green(bool state, int pin = GREEN_LED_PIN){
   digitalWrite(pin, state);
 }
 
-void setup()
-{
+void setup(){
   pinMode(RED_LED_PIN, OUTPUT);
   pinMode(YELLOW_LED_PIN, OUTPUT);
   pinMode(GREEN_LED_PIN, OUTPUT);
@@ -66,10 +65,8 @@ void setup()
 
 }
 
-void loop()
-{
-  if (WiFi.status() == WL_CONNECTED && mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial())
-  {
+void loop(){
+  if (WiFi.status() == WL_CONNECTED && mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()){
     yellow(true);
     String uid = "";
     byte *buffer = mfrc522.uid.uidByte;
@@ -87,6 +84,12 @@ void loop()
     String payload_s = http.getString();
 
     int payload_i = payload_s.toInt();
+
+    /*
+     *
+     *Do Something with the http code. Nedd to do some research first.
+     *
+    */
 
     if(String(payload_i) == payload_s && !payload_i){ //this insures that the conversion went well, because when it fails it returns 0, which is a valid input.
       yellow(false);
