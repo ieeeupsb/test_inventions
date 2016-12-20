@@ -58,6 +58,14 @@ router.post("/checkin", function (req, res) {
         if (error)
             console.log(error);
     });
+    Dictionary.findOne({uid: uid}, function (error, person) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("New Person Checked in!");
+            console.log(person);
+        }
+    });
 });
 
 router.get("*", function (req, res) {
