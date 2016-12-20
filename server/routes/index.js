@@ -23,6 +23,28 @@ router.get("/", function (req, res) {
     });
 });
 
+router.get("/log", function (req, res) {
+    var log = "";
+    Attendee.find({}, function (error, attendees) {
+        if (error) {
+            console.log(error);
+        } else {
+            attendees.forEach(function (attendee) {
+                Dictionary.findOne({
+                    uid: attendee.uid
+                }, function (error, people) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        log += attendee.time + " : " + people.name + "\n";
+                    }
+                });
+            });
+        }
+    });
+    fs.writeFileSync('./log.txt', log, 'utf-8');
+});
+
 router.post("/checkin", function (req, res) {
     var uid = req.body;
     Attendee.create({uid: uid}, function (error, attendee) {
