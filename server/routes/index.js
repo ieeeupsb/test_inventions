@@ -1,5 +1,6 @@
 var express = require("express"),
     router = express.Router(),
+    fs = require('fs'),
     Attendee = require("../models/atendee"),
     Dictionary = require("../models/dictionary");
 
@@ -42,7 +43,13 @@ router.get("/log", function (req, res) {
             });
         }
     });
-    fs.writeFileSync('./log.txt', log, 'utf-8');
+    //var logFile = fs.writeFileSync('./log.txt', log, 'utf-8');
+    res.writeHead(200, {
+        'Content-Type': 'application/force-download',
+        'Content-disposition': 'attachment; filename=NuIEEEMeetingLog.txt'
+    });
+    res.end(log);
+    res.redirect("/");
 });
 
 router.post("/checkin", function (req, res) {
