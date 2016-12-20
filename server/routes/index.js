@@ -15,8 +15,9 @@ router.get("/", function (req, res) {
             }, function (error, people) {
                 if (error) {
                     console.log(error);
+                } else {
+                    res.render("index", {attendees: people});
                 }
-                res.render("index", {attendees: people});
             });
         }
     });

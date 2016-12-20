@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var atendeeSchema = new mongoose.Schema({
-    time: { type: Date, default: Date.now },
+    time: { type: Date, default: Date.now() },
     uid: String
 });
 
