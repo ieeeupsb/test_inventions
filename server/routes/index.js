@@ -1,6 +1,8 @@
 var express = require("express"),
     router = express.Router(),
+    slack = require("slack"),
     fs = require('fs'),
+    configs = require("../configs.json");
     Attendee = require("../models/atendee"),
     Dictionary = require("../models/dictionary");
 
@@ -62,8 +64,13 @@ router.post("/checkin", function (req, res) {
         if (error) {
             console.log(error);
         } else {
-            console.log("New Person Checked in!");
-            console.log(person);
+            slack.chat.postMessage({
+                token: configs.slack.token,
+                channel: "inventions_rfid",
+                text: "New Person Checked in!\n" + uid
+            }, function (error, data) {
+                console.log(error);
+            });
         }
     });
 });
