@@ -1,6 +1,6 @@
 var express = require("express"),
     app = express(),
-    bodyParser = require('body-parser'),
+    bodyParser = require("body-parser"),
     mongoose = require("mongoose");
 
 var port = 3000;
