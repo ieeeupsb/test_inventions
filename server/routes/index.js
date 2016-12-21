@@ -1,6 +1,5 @@
 var express = require("express"),
     router = express.Router(),
-    slack = require("slack"),
     fs = require('fs'),
     moment = require("moment"),
     configs = require("../configs.json"),
