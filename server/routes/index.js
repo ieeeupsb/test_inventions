@@ -2,77 +2,113 @@ var express = require("express"),
     router = express.Router(),
     slack = require("slack"),
     fs = require('fs'),
-    configs = require("../configs.json");
-    Attendee = require("../models/atendee"),
-    Dictionary = require("../models/dictionary");
+    moment = require("moment"),
+    configs = require("../configs.json"),
+    Attendee = require("../models/attendee"),
+    Dictionary = require("../models/dictionary"),
+    JohnDoe = require("../models/johndoe");
 
 router.get("/", function (req, res) {
-    Attendee.find({}, function (error, attendees) {
+    var today = moment().startOf('day');
+    var tomorrow = moment(today).add(1, 'days');
+    var npeople = 0;
+    Attendee.find({
+        time: {
+            $gte: today.toDate(),
+            $lt: tomorrow.toDate()
+        }
+    }, function (error, attendees) {
         if (error) {
             console.log(error);
         } else {
-            Dictionary.find({
-                uid: attendees.map(function (attendee) {
-                    return attendee.uid;
-                })
-            }, function (error, people) {
+            JohnDoe.find({}, function (error, johndoe) {
                 if (error) {
                     console.log(error);
                 } else {
-                    res.render("index", {attendees: people});
+                    npeople = johndoe.length;
                 }
             });
+            Dictionary.find({
+                    uid: {
+                        $in: attendees.map(function (attendee) {
+                            return attendee.uid
+                        })
+                    }
+                },
+                function (error, people) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        res.render("index", {attendees: people, peopleMissing: npeople});
+                    }
+                });
         }
     });
 });
 
 router.get("/log", function (req, res) {
-    var log = "";
-    Attendee.find({}, function (error, attendees) {
-        if (error) {
-            console.log(error);
-        } else {
-            attendees.forEach(function (attendee) {
-                Dictionary.findOne({
-                    uid: attendee.uid
-                }, function (error, people) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        log += attendee.time + " : " + people.name + "\n";
-                    }
-                });
-            });
-        }
-    });
-    //var logFile = fs.writeFileSync('./log.txt', log, 'utf-8');
-    res.writeHead(200, {
-        'Content-Type': 'application/force-download',
-        'Content-disposition': 'attachment; filename=NuIEEEMeetingLog.txt'
-    });
-    res.end(log);
-    res.redirect("/");
+    // TODO: List with filter functionality to get all the checkins
 });
 
 router.post("/checkin", function (req, res) {
-    var uid = req.body;
+    var ok = false;
+    var uid = req.body.uid;
     Attendee.create({uid: uid}, function (error, attendee) {
-        if (error)
-            console.log(error);
-    });
-    Dictionary.findOne({uid: uid}, function (error, person) {
         if (error) {
             console.log(error);
         } else {
-            slack.chat.postMessage({
-                token: configs.slack.token,
-                channel: "inventions_rfid",
-                text: "New Person Checked in!\n" + uid
-            }, function (error, data) {
-                console.log(error);
+            Dictionary.findOne({uid: uid}, function (error, person) {
+                if (error) {
+                    console.log(error);
+                } else if (person) {
+                    ok = true;
+                } else {
+                    JohnDoe.findOne({uid: uid}, function (error, johndoe) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            if (!johndoe) {
+                                JohnDoe.create({uid: uid}, function (error, johndoe) {
+                                    if (error) {
+                                        console.log(error);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+                res.send(ok ? "0" : "1");
             });
         }
     });
+});
+
+router.get("/johndoes", function (req, res) {
+    JohnDoe.find({}, function (error, johndoes) {
+        if (error) {
+            console.log(error);
+            res.render("johndoes", {error: error});
+        } else {
+            res.render("johndoes", {johndoes: johndoes, error: error});
+        }
+    })
+});
+
+router.post("/johndoes", function (req, res) {
+    var uid = req.body.uid;
+    Dictionary.create({name: req.body.name, uid: req.body.uid}, function (error, person) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("New Person added to dictionary!");
+        }
+    });
+    JohnDoe.remove({uid: uid}, function (error) {
+        if (error) {
+            console.log(error);
+        }
+    });
+    res.redirect("/johndoes");
 });
 
 router.get("*", function (req, res) {
