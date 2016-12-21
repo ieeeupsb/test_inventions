@@ -99,8 +99,6 @@ router.post("/johndoes", function (req, res) {
     Dictionary.create({name: req.body.name, uid: req.body.uid}, function (error, person) {
         if (error) {
             console.log(error);
-        } else {
-            console.log("New Person added to dictionary!");
         }
     });
     JohnDoe.remove({uid: uid}, function (error) {
