@@ -48,6 +48,7 @@ router.get("/", function (req, res) {
 
 router.get("/log", function (req, res) {
     // TODO: List with filter functionality to get all the checkins
+    res.redirect("/");
 });
 
 router.post("/checkin", function (req, res) {
