@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
-#include <MFRC522.h>
+#include "MFRC522.h"
 #include <sha256.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
@@ -8,7 +8,7 @@
 /******************************************* START OF CONFIGURATIONS ******************************************/
 
 //SPI bus pins
-#define RST_PIN         0   //D3
+#define RST_PIN         0   //D3 //DO NOT F****** CONNECT
 #define SS_PIN          2   //D4
 
 //LED pins
@@ -26,7 +26,7 @@ uint8_t hmacKey[]={
 
 #define HMAC_KEY_LENGTH 20 //This number must reflect the number of bytes in 'hmacKey'.
 
-const char* url = "http://haxor.fe.up.pt:3000/entry";
+const char* url = "http://haxor.fe.up.pt:4444/checkin";
 
 /******************************************** END OF CONFIGURATIONS *******************************************/
 /******************* DO NOT CHANGE CODE AFTER THIS POINT UNLESS YOU KNOW WHAT YOU ARE DOING *******************/
@@ -39,6 +39,7 @@ int payload_i = 0;
 char* generateHash(String data, const uint8_t* key, int key_length){
   Sha256.initHmac(key, key_length); // key, and length of key in bytes
   Sha256.print(data);
+  Serial.println("hash ended");
   return (char*)Sha256.resultHmac();
 }
 
@@ -83,7 +84,28 @@ bool atemptConnection(String ssid, String pass){
   return true;
 }
 
+String URLEncode(const char* msg){
+    const char *hex = "0123456789abcdef";
+    String encodedMsg = "";
+
+    while (*msg!='\0'){
+        if( ('a' <= *msg && *msg <= 'z')
+                || ('A' <= *msg && *msg <= 'Z')
+                || ('0' <= *msg && *msg <= '9') ) {
+            encodedMsg += *msg;
+        } else {
+            encodedMsg += '%';
+            encodedMsg += hex[*msg >> 4];
+            encodedMsg += hex[*msg & 15];
+        }
+        msg++;
+    }
+    Serial.println("encoded");
+    return encodedMsg;
+}
+
 void setup(){
+  Serial.begin(115200);
   pinMode(RED_LED_PIN, OUTPUT);     //
   pinMode(YELLOW_LED_PIN, OUTPUT);  //Set up LED pins
   pinMode(GREEN_LED_PIN, OUTPUT);   //
@@ -137,8 +159,12 @@ void loop(){
   http.begin(url);
   http.addHeader("Content-Type", "text/plain");
 
-  int httpCode = http.POST(generateHash(uid, hmacKey, HMAC_KEY_LENGTH)); //HTTP POST and http response code to such POST
+  Serial.println("POST started");
+  int httpCode = http.POST( "uid=" + URLEncode(generateHash(uid, hmacKey, HMAC_KEY_LENGTH))); //HTTP POST and http response code to such POST
+  payload_s = http.getString(); //Get response string to the POST.
 
+  Serial.print("code: ");
+  Serial.println(httpCode);
   // httpCode will be negative on error
   if(httpCode > 0){
     // HTTP header has been send and Server response header has been handled
@@ -146,9 +172,9 @@ void loop(){
 
     // file found at server
     if(httpCode == HTTP_CODE_OK) {
-      payload_s = http.getString(); //Get response string to the POST.
       payload_i = payload_s.toInt(); //Converts the receieved string to an integer.
 
+      Serial.print("Payload: ");
       Serial.println(payload_s);
     }
   }
@@ -156,6 +182,7 @@ void loop(){
     //Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
 
   http.end();
+  Serial.println("http end");
 
   if(String(payload_i) == payload_s && !payload_i){ //This insures that the conversion went well, because when it fails it returns 0, which is a valid input.
     yellow(false); //Turn off the yellow LED, because we are about to show a response
@@ -169,7 +196,7 @@ void loop(){
     delay(2000); //Wait two seconds to give time for the user to see the response.
     red(false); //Turn off the red LED
   }
-
+  Serial.println("end of cycle\n");
   mfrc522.PICC_HaltA(); //Halt PICC
   mfrc522.PCD_StopCrypto1(); //Stop encryption on PCD
 }
