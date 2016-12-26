@@ -26,28 +26,28 @@ router.get("/", function (req, res) {
                 } else {
                     npeople = johndoe.length;
                 }
+                Dictionary.find({
+                        uid: {
+                            $in: attendees.map(function (attendee) {
+                                return attendee.uid;
+                            })
+                        }
+                    },
+                    function (error, people) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            res.render("index", {path: "home", attendees: people, peopleMissing: npeople});
+                        }
+                    });
             });
-            Dictionary.find({
-                    uid: {
-                        $in: attendees.map(function (attendee) {
-                            return attendee.uid
-                        })
-                    }
-                },
-                function (error, people) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        res.render("index", {attendees: people, peopleMissing: npeople});
-                    }
-                });
+
         }
     });
 });
 
 router.get("/log", function (req, res) {
     // TODO: List with filter functionality to get all the checkins
-    res.redirect("/");
 });
 
 router.post("/checkin", function (req, res) {
@@ -61,7 +61,8 @@ router.post("/checkin", function (req, res) {
                 if (error) {
                     console.log(error);
                 } else if (person) {
-                    ok = true;
+                    res.send("0");
+                    res.end();
                 } else {
                     JohnDoe.findOne({uid: uid}, function (error, johndoe) {
                         if (error) {
@@ -72,12 +73,16 @@ router.post("/checkin", function (req, res) {
                                     if (error) {
                                         console.log(error);
                                     }
+                                    res.send("1");
+                                    res.end();
                                 });
+                            } else {
+                                res.send("1");
+                                res.end();
                             }
                         }
                     });
                 }
-                res.send(ok ? "0" : "1");
             });
         }
     });
@@ -85,28 +90,23 @@ router.post("/checkin", function (req, res) {
 
 router.get("/johndoes", function (req, res) {
     JohnDoe.find({}, function (error, johndoes) {
-        if (error) {
-            console.log(error);
-            res.render("johndoes", {error: error});
-        } else {
-            res.render("johndoes", {johndoes: johndoes, error: error});
-        }
-    })
+        if (!johndoes.length) res.redirect("/");
+        res.render("johndoes", {path: "", johndoes: johndoes});
+    });
 });
 
 router.post("/johndoes", function (req, res) {
-    var uid = req.body.uid;
-    Dictionary.create({name: req.body.name, uid: req.body.uid}, function (error, person) {
-        if (error) {
-            console.log(error);
-        }
+    Dictionary.create({name: req.body.name, uid: req.body.uid, photo: req.body.photo}, function (error) {
+        JohnDoe.remove({uid: req.body.uid}, function (error) {
+            res.redirect("/johndoes");
+        });
     });
-    JohnDoe.remove({uid: uid}, function (error) {
-        if (error) {
-            console.log(error);
-        }
+});
+
+router.get("/about", function (req, res) {
+    JohnDoe.find({}, function (error, johndoes) {
+        res.render("about", {path: "about", error: error, peopleMissing: johndoes.length});
     });
-    res.redirect("/johndoes");
 });
 
 router.get("*", function (req, res) {

@@ -1,18 +1,36 @@
 <% include ./partials/header.ejs %>
 <div class="container">
-    <% if(attendees.length == 0){ %>
-    <h1>No one checked in yet...</h1>
-    <% } else { %>
     <% if(peopleMissing != 0){ %>
-    <h2>You have <strong><%= peopleMissing %></strong> unknown people</h2>
-    <% };;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; %>
-    <ul>
+    <h2><a href="/johndoes">You have <strong><%= peopleMissing %></strong> unknown
+            <% if(peopleMissing > 1){ %>
+            people
+            <% } else{ %>
+            person
+            <% } %>
+        </a></h2>
+    <% } %>
+    <% if(attendees.length == 0){ %>
+    <h1>It's a lonely day...</h1>
+    <% } else { %>
+    <div class="container">
+        <% attendees.sort();
+        attendees.forEach(function (attendee) {
+        if(attendee.photo){ %>
+        <div class="col-md-2">
+            <div class="container">
+                <img src="<%= attendee.photo %>">
+            </div>
+        </div>
+        <% }}); %>
+    </div>
+    <br>
+    <div>
+        <h2>List</h2>
+        <br>
         <% attendees.forEach(function (attendee) { %>
-        <li>
-            <%= attendee.name %>
-        </li>
-        <% });;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; %>
-    </ul>
+        <h4><%= attendee.name %></h4>
+        <% }); %>
+    </div>
     <% } %>
 </div>
 <% include ./partials/footer.ejs %>

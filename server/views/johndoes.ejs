@@ -1,8 +1,6 @@
 <% include ./partials/header.ejs %>
 <div class="container">
-    <% if(error){ %>
-    <p><%= error %></p>
-    <% }else{ %>
+
     <% if(johndoes.length == 0){ %>
     <h1>Everyone is identified :)</h1>
     <% } else { %>
@@ -12,13 +10,13 @@
             <form name="<%= johndoe.uid %>" action="/johndoes" method="POST">
                 <div class="form-group">
                     <%= johndoe.time %> : <input type="text" value="<%= johndoe.uid %>" readonly name="uid"> <input
-                            type="text" name="name">
+                            type="text" name="name" required> <input type="text" name="photo">
                     <input type="submit" class="btn btn-primary btn-small" value="Add">
                 </div>
             </form>
         </li>
         <% }) %>
     </ul>
-    <% } } %>
+    <% } %>
 </div>
 <% include ./partials/footer.ejs %>

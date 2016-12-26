@@ -3,7 +3,7 @@ var express = require("express"),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose");
 
-var port = 3000;
+var port = 4444;
 
 var indexRoutes = require("./routes/index");
 
