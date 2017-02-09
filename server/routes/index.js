@@ -47,6 +47,7 @@ router.get("/", function (req, res) {
 });
 
 router.get("/log", function (req, res) {
+    res.send("<h1>Feature comming soon</h1>");
     // TODO: List with filter functionality to get all the checkins
 });
 
