@@ -53,6 +53,11 @@ router.get("/log", function (req, res) {
 
 router.post("/checkin", function (req, res) {
     console.log(req.body);
+    if(!req.body.uid){
+        console.log("Empty uid!");
+        res.send("1");
+        res.end();
+    }
     var ok = false;
     var uid = req.body.uid;
     Attendee.create({uid: uid}, function (error, attendee) {
