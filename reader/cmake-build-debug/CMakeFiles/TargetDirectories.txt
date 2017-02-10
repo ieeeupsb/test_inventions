@@ -1,0 +1,11 @@
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_UPLOADFS.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_BUILD.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_UPLOAD.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_CLEAN.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_REBUILD_PROJECT_INDEX.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_TEST.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_PROGRAM.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/reader.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/PLATFORMIO_UPDATE_ALL.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Goncalo/Desktop/inventions_RFId_CheckIn/reader/cmake-build-debug/CMakeFiles/rebuild_cache.dir

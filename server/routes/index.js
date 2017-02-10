@@ -2,7 +2,7 @@ var express = require("express"),
     router = express.Router(),
     fs = require('fs'),
     moment = require("moment"),
-    configs = require("../configs.json"),
+    /*configs = require("../configs.json"),*/
     Attendee = require("../models/attendee"),
     Dictionary = require("../models/dictionary"),
     JohnDoe = require("../models/johndoe");
@@ -47,10 +47,12 @@ router.get("/", function (req, res) {
 });
 
 router.get("/log", function (req, res) {
+    res.send("<h1>Feature comming soon</h1>");
     // TODO: List with filter functionality to get all the checkins
 });
 
 router.post("/checkin", function (req, res) {
+    console.log(req.body);
     var ok = false;
     var uid = req.body.uid;
     Attendee.create({uid: uid}, function (error, attendee) {
