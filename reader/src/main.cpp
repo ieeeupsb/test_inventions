@@ -17,8 +17,8 @@
 #define GREEN_LED_PIN   4   //D2
 
 //WiFi credentials
-#define wifiSSID "ssid"
-#define wifiPassword "password"
+#define wifiSSID			"ssid"
+#define wifiPassword	"password"
 
 uint8_t hmacKey[]={
   0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b
@@ -26,20 +26,22 @@ uint8_t hmacKey[]={
 
 #define HMAC_KEY_LENGTH 20 //This number must reflect the number of bytes in 'hmacKey'.
 
-const char* url = "http://haxor.fe.up.pt:4444/checkin";
+const char* host = "haxor.fe.up.pt";
+int port = 4444;
 
 /******************************************** END OF CONFIGURATIONS *******************************************/
 /******************* DO NOT CHANGE CODE AFTER THIS POINT UNLESS YOU KNOW WHAT YOU ARE DOING *******************/
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
 
-String payload_s = "";
-int payload_i = 0;
+char payload_c = '1';
+int payload_i = 1;
+bool con = false;
+WiFiClient client;
 
 char* generateHash(String data, const uint8_t* key, int key_length){
   Sha256.initHmac(key, key_length); // key, and length of key in bytes
   Sha256.print(data);
-  Serial.println("hash ended");
   return (char*)Sha256.resultHmac();
 }
 
@@ -100,8 +102,16 @@ String URLEncode(const char* msg){
         }
         msg++;
     }
-    Serial.println("encoded");
     return encodedMsg;
+}
+
+bool connect(){
+	if(client.connect(host, port)){
+		con = true;
+		return true;
+	}
+	else
+		return false;
 }
 
 void setup(){
@@ -125,17 +135,18 @@ void setup(){
 
   mfrc522.PCD_Init(); //Init each MFRC522 card
   mfrc522.PCD_DumpVersionToSerial();
+	
+	while(!connect()){}
 
   red(false);     //
   yellow(false);  //Turn off all LEDs
   green(false);   //
-
 }
 
 void loop(){
 
-  payload_s = "";
-  payload_i = 0;
+  payload_c = '1';
+  payload_i = 1;
 
   // Look for new cards
 	if(!mfrc522.PICC_IsNewCardPresent())
@@ -155,36 +166,49 @@ void loop(){
     uid += buffer[i], HEX;
   }
 
-  HTTPClient http;
-  http.begin(url);
-  http.addHeader("Content-Type", "text/plain");
+	String PostData = "uid=" + URLEncode(generateHash(uid, hmacKey, HMAC_KEY_LENGTH));
+	
+	if(con){
+		client.println("POST /checkin HTTP/1.1");
+		client.println("Host: " + String(host) + ":" + port);
+		client.println("Content-Type: application/x-www-form-urlencoded");
+		client.println("Cache-Control: no-cache");
+		client.print("Content-Length: ");
+		client.println(PostData.length());
+		client.println();
+		client.println(PostData);
+		
+		long interval = 2000;
+		unsigned long currentMillis = millis(), previousMillis = millis();
 
-  Serial.println("POST started");
-  int httpCode = http.POST( "uid=" + URLEncode(generateHash(uid, hmacKey, HMAC_KEY_LENGTH))); //HTTP POST and http response code to such POST
-  payload_s = http.getString(); //Get response string to the POST.
+		while(!client.available()){
 
-  Serial.print("code: ");
-  Serial.println(httpCode);
-  // httpCode will be negative on error
-  if(httpCode > 0){
-    // HTTP header has been send and Server response header has been handled
-    //Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+			if( (currentMillis - previousMillis) > interval ){
+				Serial.println("Timeout");
+				client.stop();
+				con = false;
+				return;
+			}
+			currentMillis = millis();
+		}
 
-    // file found at server
-    if(httpCode == HTTP_CODE_OK) {
-      payload_i = payload_s.toInt(); //Converts the receieved string to an integer.
-
-      Serial.print("Payload: ");
-      Serial.println(payload_s);
-    }
-  }
-  //else
-    //Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
-
-  http.end();
+		while (client.connected()) {
+			if ( client.available() ) {
+				payload_c = client.read();
+			}
+			else
+				break;
+		}
+	}
+	else
+		while(!connect()){}
+	
+	payload_i = payload_c - '0'; //Converts the receieved char to an integer.
+	
+	Serial.println("");
   Serial.println("http end");
 
-  if(String(payload_i) == payload_s && !payload_i){ //This insures that the conversion went well, because when it fails it returns 0, which is a valid input.
+  if(!payload_i){
     yellow(false); //Turn off the yellow LED, because we are about to show a response
     green(true); //Turn on the green LED to show that the uid has accepted by the server.
     delay(2000); //Wait two seconds to give time for the user to see the response.
