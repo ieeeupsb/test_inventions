@@ -12,22 +12,9 @@
     <% if(attendees.length == 0){ %>
     <h1>It's a lonely day...</h1>
     <% } else { %>
-    <div class="container">
-        <% attendees.sort();
-        attendees.forEach(function (attendee) {
-        if(attendee.photo){ %>
-        <div class="col-md-2">
-            <div class="container">
-                <img src="<%= attendee.photo %>">
-            </div>
-        </div>
-        <% }}); %>
-    </div>
-    <br>
     <div>
-        <h2>List</h2>
-        <br>
-        <% attendees.forEach(function (attendee) { %>
+        <% attendees.sort();
+        attendees.forEach(function (attendee) { %>
         <h4><%= attendee.name %></h4>
         <% }); %>
     </div>
