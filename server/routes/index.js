@@ -52,6 +52,7 @@ router.get("/log", function (req, res) {
 });
 
 router.post("/checkin", function (req, res) {
+    console.log(req.body);
     var ok = false;
     var uid = req.body.uid;
     Attendee.create({uid: uid}, function (error, attendee) {
