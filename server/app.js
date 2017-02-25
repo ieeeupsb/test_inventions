@@ -9,7 +9,7 @@ var indexRoutes = require("./routes/index");
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-mongoose.connect("mongodb://localhost/rfid");
+mongoose.connect("mongodb://localhost/orgtools");
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 
