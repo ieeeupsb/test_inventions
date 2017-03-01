@@ -4,6 +4,7 @@
 #include <sha256.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include "secrets.h"
 
 /******************************************* START OF CONFIGURATIONS ******************************************/
 
@@ -17,12 +18,12 @@
 #define GREEN_LED_PIN   4   //D2
 
 //WiFi credentials
-#define wifiSSID			"SSID"
-#define wifiPassword	"PASS"
+//#define wifiSSID			"SSID"
+//#define wifiPassword	"PASS"
 
-uint8_t hmacKey[]={
+/*uint8_t hmacKey[]={
   0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b,0x0b
-};
+};*/
 
 #define HMAC_KEY_LENGTH 20 //This number must reflect the number of bytes in 'hmacKey'.
 

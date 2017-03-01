@@ -42,3 +42,5 @@ jspm_packages
 # Configs
 configs.json
 server/config\.json
+
+reader/src/secrets.h
